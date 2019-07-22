@@ -1,13 +1,23 @@
-import sys, time
-from p5 import *
-from random import randint
+# Author: Javier Roman
 
-W, H = 500, 500
-ROWS, COLS = 30, 30
-pressed = False
+from utils import *
+from p5 import *
 
 class Grid:
-    def __init__(self, rows, cols, p, offset=10):
+    """
+    This class implement every functionality needed to perform the simulations
+    of the populations of cells based on the rules proposed for the Game Of Life.
+    """
+    def __init__(self, rows, cols, p, offset=5):
+        """
+        Constructor of the class.
+        
+        Args:
+            rows (int): Number of rows of the grid.
+            cols (int): Number of columns of the grid.
+            p (float): Percentage of cells alive.
+            offset (int, optional): Cells outside the canvas that are still simulated. Defaults to 5.
+        """
         self.rows = rows
         self.cols = cols
         self.offset = offset
@@ -16,9 +26,25 @@ class Grid:
         self.create_grid(p)
 
     def add(self, position: tuple):
+        """
+        This method adds a cell to the set of alive cells.
+        
+        Args:
+            position (tuple): Pair of values representing a 2d spatial position in the grid.
+        """
         self.live.add(position)
 
     def neighbours(self, pos, empty=False):
+        """
+        This method returns the set of neighbours of one certain cell.
+        
+        Args:
+            pos (tuple): 2d spatial position of a cell.
+            empty (bool, optional): When specified only dead neighbours cells are retrieved. Defaults to False.
+        
+        Returns:
+            list: List of cell positions.
+        """ 
         i, j = pos
         neighbours = set()
         for di in [-1, 0, 1]:
@@ -36,6 +62,15 @@ class Grid:
         return neighbours
 
     def cell_in_bounds(self, cell):
+        """
+        Checks if a certain cell being simulated is in-bounds including the offset.
+        
+        Args:
+            cell (tuple): 2d spatial position of the cell.
+        
+        Returns:
+            bool: True if the cell is in-bounds False otherwise.
+        """
         r, c = cell
         return r < self.rows+self.offset and r >= -self.offset and c < self.cols+self.offset and c >= -self.offset
 
@@ -50,18 +85,28 @@ class Grid:
                     self.__survivors.add(cell) # It becomes alive
             
     def generation(self):
+        """
+        This function simulates one generation in a very efficient way. Instead of looking
+        for every cell in the grid it only looks for the cells alive and the dead neighbours
+        of those cells.
+        """
         cells_to_check = self.live.copy()
         temp_set = set()
         for cell in cells_to_check:
             temp_set|=self.neighbours(cell, empty=True)
         cells_to_check|=temp_set
-        cells_to_check = sorted(list(cells_to_check))
         self.__survivors = self.live.copy()
         for cell in cells_to_check:
             self.natural_selection(cell)
         self.live = self.__survivors.copy()
 
     def create_grid(self, p):
+        """
+        This function creates the whole grid with p*rows*cols alive cells.
+        
+        Args:
+            p (float): Percentage of cells alive.
+        """
         for _ in range(int(self.rows*self.cols*p)):
             i, j = random2d(self.rows-1, self.cols-1)
             while (i, j) in self.live:
@@ -69,40 +114,11 @@ class Grid:
             self.add((i,j))
 
     def draw(self):
+        """
+        This function draws the alive cells in their corresponding position.
+        """
         sq_w, sq_h = W/float(self.cols), H/float(self.rows)
         for i, j in self.live:
             fill(0)
             x, y = j*sq_w, i*sq_h
             rect((x, y), sq_w, sq_h)
-
-def range2d(i, j):
-    return ((ii, jj) for ii in range(i) for jj in range(j))
-
-def random2d(maxI, maxJ):
-    i = randint(0, maxI)
-    j = randint(0, maxJ)
-
-    return i, j    
-
-def key_pressed(event):
-    global pressed
-    if key  == ' ':
-        pressed = not pressed
-
-def mouse_pressed():
-    c, r = int(mouse_x*COLS/W), int(mouse_y*ROWS/H)
-    grid.add((r,c))
-
-def setup():
-    size(W, H)
-    global grid
-    grid = Grid(ROWS, COLS, 0)
-
-def draw():
-    background(255)
-    grid.draw()
-    if pressed:
-        grid.generation()
-
-if __name__ == '__main__':
-    run()
