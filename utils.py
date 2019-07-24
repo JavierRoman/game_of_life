@@ -1,10 +1,10 @@
 # Author: Javier Roman
 
 from random import randint
+import argparse
 
 # Some global variables
 W, H = 500, 500 # Width and height of the canvas.
-ROWS, COLS = 30, 30 # Number of rows and columns of the grid.
 
 def range2d(i, j):
     """
@@ -35,3 +35,9 @@ def random2d(maxI, maxJ):
     j = randint(0, maxJ)
 
     return i, j    
+
+def restricted_float(x):
+    x = float(x)
+    if x < 0.0 or x > 1.0:
+        raise argparse.ArgumentTypeError("{} not in range [0.0, 1.0]".format(x))
+    return x
