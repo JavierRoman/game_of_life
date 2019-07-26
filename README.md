@@ -22,7 +22,7 @@ This will show some help:
 * -p [0.0, 1.0]/--population [0.0, 1.0]: Percentage of the cells of the grid that are alive (0.2 by default).
 * -s [SIZE]/--size [SIZE]: Size of the squared grid (30 by default).
 
-Once you run the program a window will open showing the environment. **You can start the simulation** by pressing the *spacebar*. You can also stop it doing so. Additionaly you can add a living cell by clicking at any position of the grid.
+Once you run the program a window will open showing the environment. **You can start the simulation** by pressing the *spacebar*. You can also stop it doing so. Additionaly you can **add a living cell by clicking** at any position of the grid.
 ### Examples
 The example below will start an instance of game of life with a grid of 50x50 and a 40% of the cells alive.
 ```
